@@ -27,10 +27,12 @@ export async function DELETE(
   return NextResponse.json(deletedData, { status: 200 });
 }
 
+// using 'coerce' so that the primitive types will be inferred
+// https://zod.dev/?id=coercion-for-primitives
 const patchSchema = z
   .object({
-    id: z.number(),
-    todo: z.string(),
+    id: z.coerce.number(),
+    todo: z.coerce.string(),
   })
   .required();
 export async function PATCH(
@@ -40,7 +42,7 @@ export async function PATCH(
   const body = await request.json();
 
   const parsedSchema = patchSchema.safeParse({
-    id: parseInt(params.id),
+    id: params.id,
     todo: body.todo,
   });
 
