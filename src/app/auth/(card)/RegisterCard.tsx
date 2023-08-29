@@ -41,12 +41,11 @@ const RegusterCard = () => {
   const [Loading, setLoading] = React.useState(false);
   const { toast } = useToast();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl");
-  const router = useRouter();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
