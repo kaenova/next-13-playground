@@ -1,16 +1,26 @@
 import { prisma } from "@/lib/db";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import * as z from "zod";
+import { NextAuthOptions } from "../../auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
 
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const session = await getServerSession(NextAuthOptions);
+
+  if (!session?.user) {
+    redirect("/auth");
+  }
+
   const id = parseInt(params.id);
 
   const data = await prisma.todo.findFirst({
     where: {
       id: id,
+      userId: session.user.id,
     },
   });
 
@@ -39,6 +49,12 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const session = await getServerSession(NextAuthOptions);
+
+  if (!session?.user) {
+    redirect("/auth");
+  }
+
   const body = await request.json();
 
   const parsedSchema = patchSchema.safeParse({
@@ -55,6 +71,7 @@ export async function PATCH(
   const data = await prisma.todo.findFirst({
     where: {
       id: parsedData.id,
+      userId: session.user.id
     },
   });
 
@@ -65,6 +82,7 @@ export async function PATCH(
   const updatedData = await prisma.todo.update({
     where: {
       id: data.id,
+      userId: session.user.id
     },
     data: {
       name: parsedData.todo,

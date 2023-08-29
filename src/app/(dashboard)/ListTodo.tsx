@@ -3,15 +3,31 @@ import React from 'react'
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
 import { TodoCard } from './TodoCard'
+import { getServerSession } from 'next-auth'
+import { NextAuthOptions } from '../api/auth/[...nextauth]/route'
+import { redirect } from 'next/navigation'
 
 const ListTodo = async () => {
-  const data = await prisma.todo.findMany()
+  const session = await getServerSession(NextAuthOptions)
+
+  if (!session) {
+    redirect("/auth")
+  }
+  if (!session.user) {
+    redirect("/auth")
+    return
+  }
+
+  const data = await prisma.todo.findMany({
+    where: {
+      userId: session.user.id
+    }
+  })
   return (
     <div className='mt-4'>
       <Card>
