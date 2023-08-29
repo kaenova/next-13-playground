@@ -15,7 +15,7 @@ model Todo {
   name      String
   createdAt DateTime @default(now())
   userId    String
-  User      User     @relation(fields: [userId], references: [id])
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {

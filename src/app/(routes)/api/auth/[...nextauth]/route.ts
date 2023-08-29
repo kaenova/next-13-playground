@@ -4,7 +4,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { z } from "zod";
 import bcrypt from "bcrypt";
 
-
 const loginSchema = z
   .object({
     email: z.coerce.string().min(1).email(),
@@ -91,4 +90,26 @@ export const NextAuthOptions: AuthOptions = {
 
 const handler = NextAuth(NextAuthOptions);
 
-export { handler as GET, handler as POST };
+import { getServerSession } from "next-auth";
+import { NextRequest } from "next/server";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+
+async function DELETE(req: NextRequest) {
+  const session = await getServerSession(NextAuthOptions);
+
+  if (!session?.user) {
+    redirect("/auth");
+  }
+
+  await prisma.user.delete({
+    where: {
+      id: session.user.id,
+    },
+  });
+
+  cookies().delete("next-auth.session-token");
+  redirect("/auth");
+}
+
+export { handler as GET, handler as POST, DELETE };

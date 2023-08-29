@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/card"
 import { TodoCard } from './TodoCard'
 import { getServerSession } from 'next-auth'
-import { NextAuthOptions } from '../api/auth/[...nextauth]/route'
 import { redirect } from 'next/navigation'
+import { NextAuthOptions } from '../../(routes)/api/auth/[...nextauth]/route'
 
 const ListTodo = async () => {
   const session = await getServerSession(NextAuthOptions)
